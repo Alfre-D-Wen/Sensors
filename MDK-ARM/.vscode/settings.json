@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.do": "tcl",
+        "gpio.h": "c",
+        "main.h": "c",
+        "pm2_5_sensor.h": "c",
+        "stm32f1xx.h": "c",
+        "stdio.h": "c",
+        "usart.h": "c",
+        "pm_sensor.h": "c",
+        "bsp_spi_flash.h": "c",
+        "bsp_ili9341_lcd.h": "c",
+        "fonts.h": "c",
+        "bsp_debug_usart.h": "c",
+        "stm32f1xx_hal.h": "c"
+    },
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.errorSquiggles": "Enabled"
+}
