@@ -20,11 +20,11 @@ extern "C"
 #include "dma.h"
 #include "usart.h"
 
-/* USER CODE BEGIN Includes */
+    /* USER CODE BEGIN Includes */
 
-/* USER CODE END Includes */
+    /* USER CODE END Includes */
 
-/* USER CODE BEGIN Private defines */
+    /* USER CODE BEGIN Private defines */
 #define SENSOR_ADDRESS huart1
 #define HEAD 0x68
 #define LENGTH 0x01
@@ -34,8 +34,8 @@ extern "C"
 #define CS_READ_DATA 0x93
 #define CS_START_TRANS_AUTO 0x47
 #define CS_STOP_TRANS_AUTO 0x77
-#define PM_OK 0xA5A5
-#define PM_FAIL 0X9696
+#define PM_FAIL 0x96
+
     /* USER CODE END Private defines */
 
     /* USER CODE BEGIN Prototypes */

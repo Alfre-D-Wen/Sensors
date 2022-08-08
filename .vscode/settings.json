@@ -2,6 +2,16 @@
     "files.associations": {
         "*.do": "tcl",
         "main.h": "c",
-        "stm32f1xx_hal.h": "c"
+        "stm32f1xx_hal.h": "c",
+        "driver_dht11.h": "c",
+        "bsp_spi_flash.h": "c",
+        "bsp_systick.h": "c",
+        "bsp_ili9341_lcd.h": "c",
+        "core_delay.h": "c",
+        "usart.h": "c",
+        "bsp_dht11.h": "c",
+        "pm_sensor.h": "c",
+        "stm32f1xx.h": "c",
+        "stdio.h": "c"
     }
 }

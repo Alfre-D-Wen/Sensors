@@ -28,6 +28,9 @@
 #include "pm_sensor.h"
 #include "bsp_ili9341_lcd.h"
 #include "bsp_spi_flash.h"
+#include "core_delay.h"
+#include "bsp_SysTick.h"
+#include "bsp_dht11.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +52,10 @@
 /* USER CODE BEGIN PV */
 extern uint16_t PM_2_5_DATA;
 extern uint8_t PM_RX_RESPOND_BUFFER[2];
-char dispBuff[100];
+extern uint8_t PM_RX_DATA_BUFFER[8];
+char pm_display_buff[100];
+char hum_display_buff[100];
+char temp_display_buff[100];
 
 /* USER CODE END PV */
 
@@ -71,6 +77,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  DHT11_Data_TypeDef DHT11_Data;
 
   /* USER CODE END 1 */
 
@@ -87,7 +94,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  SysTick_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -95,17 +102,20 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  /* PM2.ä¼ æ„Ÿå™¨åœæ­¢è‡ªåŠ¨ä¼ é€ */
+  /* PM2.5´«¸ĞÆ÷Í£Ö¹×Ô¶¯´«ËÍ */
   PM_Stop_Transmit_Auto();
 
-  /* LCDåˆå§‹åŒ– */
+  /* LCD³õÊ¼»¯ */
   ILI9341_Init();
 
-  /* è®¾ç½®LCDå­—ä½“ï¼Œå‰æ™¯é¢œè‰²ï¼ŒèƒŒæ™¯é¢œè‰² */
+  /* ÎÂÊª¶È´«¸ĞÆ÷³õÊ¼»¯ */
+  DHT11_Init();
+
+  /* ÉèÖÃLCD×ÖÌå£¬Ç°¾°ÑÕÉ«£¬±³¾°ÑÕÉ« */
   LCD_SetFont(&Font8x16);
   LCD_SetColors(BLUE, BLACK);
 
-  /* æ¸…å±ï¼Œæ˜¾ç¤ºå…¨é»‘ */
+  /* ÇåÆÁ£¬ÏÔÊ¾È«ºÚ */
   ILI9341_Clear(0, 0, LCD_X_LENGTH, LCD_Y_LENGTH);
 
   /* USER CODE END 2 */
@@ -114,21 +124,55 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* è¯»å–PM2.5æ•°æ® */
+    /* ¶ÁÈ¡PM2.5Êı¾İ */
     PM_Read_Data();
-    // printf("PM2.5 Value = %d\r\n", PM_2_5_DATA);
+    /* ¶ÁÈ¡ÎÂÊª¶ÈÊı¾İ */
+    DHT11_Read_TempAndHumidity(&DHT11_Data);
+    /* ½«Ğ´ºÃµÄ×Ö·û´®·¢ËÍµ½buffer */
 
-    /* å°†æ•°æ®æ˜¾ç¤ºåœ¨LCDå±å¹• */
-    sprintf(dispBuff, "PM2.5 Value:  %d", PM_2_5_DATA);
-    /* æ¸…é™¤å•è¡Œæ–‡å­— */
+    if ((PM_RX_RESPOND_BUFFER[0] | PM_RX_DATA_BUFFER[0]) == PM_FAIL)
+    {
+      sprintf(pm_display_buff, "PM2.5 Value Read Error");
+    }
+    else
+    {
+      sprintf(pm_display_buff, "PM2.5 Value: %d ug/m3", PM_2_5_DATA);
+    }
+    if (DHT11_Read_TempAndHumidity(&DHT11_Data) == SUCCESS)
+    {
+      sprintf(hum_display_buff, "Humidity Value: %d,%d %%RH", DHT11_Data.humi_int, DHT11_Data.humi_deci);
+      sprintf(temp_display_buff, "Temperature Value: %d,%d ¡æ", DHT11_Data.temp_int, DHT11_Data.temp_deci);
+    }
+    else
+    {
+      sprintf(hum_display_buff, "Humidity Value Read Error");
+      sprintf(temp_display_buff, "Temperature Value Read Error");
+    }
+
+    /* Çå³ıµ¥ĞĞÎÄ×Ö */
     LCD_ClearLine(LINE(5));
-    /* æ˜¾ç¤ºè¯¥å­—ç¬¦ä¸² */
-    ILI9341_DispStringLine_EN_CH(LINE(5), dispBuff);
+    LCD_ClearLine(LINE(7));
+    LCD_ClearLine(LINE(9));
+    // LCD_ClearLine(LINE(9));
+
+    /* ÏÔÊ¾¸Ã×Ö·û´® */
+    ILI9341_DispStringLine_EN_CH(LINE(5), pm_display_buff);
+    ILI9341_DispStringLine_EN_CH(LINE(7), hum_display_buff);
+    ILI9341_DispStringLine_EN_CH(LINE(9), temp_display_buff);
+
+    /*if (DHT11_Read_TempAndHumidity(&DHT11_Data) == SUCCESS)
+    {
+      printf("\r\n¶ÁÈ¡DHT11³É¹¦!\r\n\r\nÊª¶ÈÎª%d.%d £¥RH £¬ÎÂ¶ÈÎª %d.%d¡æ \r\n",
+             DHT11_Data.humi_int, DHT11_Data.humi_deci, DHT11_Data.temp_int, DHT11_Data.temp_deci);
+    }
+    else
+    {
+      printf("Read DHT11 ERROR!\r\n");
+    } */
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
     HAL_Delay(1000);
   }
   /* USER CODE END 3 */
@@ -176,7 +220,7 @@ void SystemClock_Config(void)
 
 int fputc(int ch, FILE *f)
 {
-  /* å‘ï¿½?ï¿½ä¸€ä¸ªå­—èŠ‚æ•°æ®åˆ°ä¸²å£DEBUG_USART */
+  /* ·¢???Ò»¸ö×Ö½ÚÊı¾İµ½´®¿ÚDEBUG_USART */
   HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 1000);
 
   return (ch);
