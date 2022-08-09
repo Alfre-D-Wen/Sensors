@@ -29,7 +29,7 @@
 #include "bsp_ili9341_lcd.h"
 #include "bsp_spi_flash.h"
 #include "core_delay.h"
-#include "bsp_SysTick.h"
+//#include "bsp_SysTick.h"
 #include "bsp_dht11.h"
 /* USER CODE END Includes */
 
@@ -94,15 +94,16 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  SysTick_Init();
+  // SysTick_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
+  // MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  /* PM2.5传感器停止自动传送 */
+  /* PM2.5传感器停止自动传送*/
   PM_Stop_Transmit_Auto();
 
   /* LCD初始化 */
@@ -126,11 +127,19 @@ int main(void)
   {
     /* 读取PM2.5数据 */
     PM_Read_Data();
+
     /* 读取温湿度数据 */
     DHT11_Read_TempAndHumidity(&DHT11_Data);
-    /* 将写好的字符串发送到buffer */
 
-    if ((PM_RX_RESPOND_BUFFER[0] | PM_RX_DATA_BUFFER[0]) == PM_FAIL)
+    /* 串口显示数据
+    printf("PM2.5 Value = %d\r\n", PM_2_5_DATA);
+    printf("Humidity Value = %d.%d %%RH\r\n", DHT11_Data.humi_int, DHT11_Data.humi_deci);
+    printf("Temperature Value = %d.%d ℃\r\n", DHT11_Data.temp_int, DHT11_Data.temp_deci);
+    printf("read data = %d\r\n", DHT11_Data.check_sum);
+    printf("read data = %d\r\n", DHT11_Read_TempAndHumidity(&DHT11_Data));*/
+
+    /* 将写好的字符串发送到buffer */
+    if ((PM_RX_RESPOND_BUFFER[0] == PM_FAIL) | (PM_RX_DATA_BUFFER[0] == PM_FAIL))
     {
       sprintf(pm_display_buff, "PM2.5 Value Read Error");
     }
@@ -138,42 +147,25 @@ int main(void)
     {
       sprintf(pm_display_buff, "PM2.5 Value: %d ug/m3", PM_2_5_DATA);
     }
-    if (DHT11_Read_TempAndHumidity(&DHT11_Data) == SUCCESS)
-    {
-      sprintf(hum_display_buff, "Humidity Value: %d,%d %%RH", DHT11_Data.humi_int, DHT11_Data.humi_deci);
-      sprintf(temp_display_buff, "Temperature Value: %d,%d ℃", DHT11_Data.temp_int, DHT11_Data.temp_deci);
-    }
-    else
-    {
-      sprintf(hum_display_buff, "Humidity Value Read Error");
-      sprintf(temp_display_buff, "Temperature Value Read Error");
-    }
+
+    sprintf(hum_display_buff, "Humidity Value: %d.%d %%RH", DHT11_Data.humi_int, DHT11_Data.humi_deci);
+    sprintf(temp_display_buff, "Temperature Value: %d.%d ℃", DHT11_Data.temp_int, DHT11_Data.temp_deci);
 
     /* 清除单行文字 */
     LCD_ClearLine(LINE(5));
     LCD_ClearLine(LINE(7));
     LCD_ClearLine(LINE(9));
-    // LCD_ClearLine(LINE(9));
 
     /* 显示该字符串 */
     ILI9341_DispStringLine_EN_CH(LINE(5), pm_display_buff);
     ILI9341_DispStringLine_EN_CH(LINE(7), hum_display_buff);
     ILI9341_DispStringLine_EN_CH(LINE(9), temp_display_buff);
 
-    /*if (DHT11_Read_TempAndHumidity(&DHT11_Data) == SUCCESS)
-    {
-      printf("\r\n读取DHT11成功!\r\n\r\n湿度为%d.%d ％RH ，温度为 %d.%d℃ \r\n",
-             DHT11_Data.humi_int, DHT11_Data.humi_deci, DHT11_Data.temp_int, DHT11_Data.temp_deci);
-    }
-    else
-    {
-      printf("Read DHT11 ERROR!\r\n");
-    } */
+    HAL_Delay(2000);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }

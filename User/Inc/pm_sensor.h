@@ -25,7 +25,7 @@ extern "C"
     /* USER CODE END Includes */
 
     /* USER CODE BEGIN Private defines */
-#define SENSOR_ADDRESS huart1
+#define SENSOR_PORT huart1
 #define HEAD 0x68
 #define LENGTH 0x01
 #define CMD_READ_DATA 0x04
@@ -35,6 +35,7 @@ extern "C"
 #define CS_START_TRANS_AUTO 0x47
 #define CS_STOP_TRANS_AUTO 0x77
 #define PM_FAIL 0x96
+#define PM_OK 0xA5
 
     /* USER CODE END Private defines */
 

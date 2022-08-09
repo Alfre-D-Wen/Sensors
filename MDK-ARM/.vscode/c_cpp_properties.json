@@ -104,8 +104,8 @@
                 "d:\\Documents\\STM32\\Test\\DMA_Test\\User\\Inc",
                 "D:\\Software\\Keil_v5\\ARM\\ARMCC\\include",
                 "d:\\Documents\\STM32\\Test\\DMA_Test\\MDK-ARM",
-                "d:\\Documents\\STM32\\Test\\DMA_Test\\User\\Src",
                 "d:\\Documents\\STM32\\Test\\DMA_Test\\Core\\Src",
+                "d:\\Documents\\STM32\\Test\\DMA_Test\\User\\Src",
                 "d:\\Documents\\STM32\\Test\\DMA_Test\\Drivers\\STM32F1xx_HAL_Driver\\Src"
             ],
             "defines": [

@@ -82,6 +82,7 @@ static void DHT11_Mode_IPU(void)
 
 	/*设置引脚模式为浮空输入模式*/
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
 
 	/*调用库函数，初始化DHT11_Dout_GPIO_PORT*/
 	HAL_GPIO_Init(DHT11_Dout_GPIO_PORT, &GPIO_InitStruct);
@@ -132,7 +133,7 @@ static uint8_t DHT11_ReadByte(void)
 		 */
 		DHT11_DELAY_US(40); //延时x us 这个延时需要大于数据0持续的时间即可
 
-		if (DHT11_Dout_IN() == GPIO_PIN_RESET) /* x us后仍为高电平表示数据“1” */
+		if (DHT11_Dout_IN() == GPIO_PIN_SET) /* x us后仍为高电平表示数据“1” */
 		{
 			/* 等待数据1的高电平结束 */
 			while (DHT11_Dout_IN() == GPIO_PIN_SET)
